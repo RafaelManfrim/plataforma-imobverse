@@ -6,24 +6,24 @@ const tiers = [
     name: 'Normal',
     id: 'tier-normal',
     href: '#',
-    priceMonthly: '$19',
-    description: "The perfect plan if you're just getting started with our product.",
-    features: ['25 products', 'Up to 10,000 subscribers', 'Advanced analytics', '24-hour support response time'],
+    priceMonthly: 'R$ 19,99',
+    description: "Acesso ao evento com muita coisa boa",
+    features: ['W', 'X', 'Y', 'Z'],
     featured: false,
   },
   {
     name: 'Vip',
     id: 'tier-vip',
     href: '#',
-    priceMonthly: '$49',
-    description: 'Dedicated support and infrastructure for your company.',
+    priceMonthly: 'R$ 49,99',
+    description: 'Acesso total ao evento com benefícios exclusivos',
     features: [
-      'Unlimited products',
-      'Unlimited subscribers',
-      'Advanced analytics',
-      'Dedicated support representative',
-      'Marketing automations',
-      'Custom integrations',
+      'U',
+      'V',
+      'W',
+      'X',
+      'Y',
+      'Z',
     ],
     featured: true,
   },
@@ -50,12 +50,11 @@ export default function Pricing({ ...rest }: PricingProps) {
       <div className="mx-auto max-w-2xl text-center lg:max-w-4xl">
         <h2 className="text-base font-semibold leading-7 text-indigo-600">Ingressos</h2>
         <p className="mt-2 text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
-          The right price for you, whoever you are
+          Título ou Frase de Impacto
         </p>
       </div>
       <p className="mx-auto mt-6 max-w-2xl text-center text-lg leading-8 text-gray-600">
-        Qui iusto aut est earum eos quae. Eligendi est at nam aliquid ad quo reprehenderit in aliquid fugiat dolorum
-        voluptatibus.
+        Subtítulo ou descrição, pode ser usado frase ou até removido
       </p>
       <div className="mx-auto mt-16 grid max-w-lg grid-cols-1 items-center gap-y-6 sm:mt-20 sm:gap-y-0 lg:max-w-4xl lg:grid-cols-2">
         {tiers.map((tier, tierIdx) => (
@@ -89,7 +88,7 @@ export default function Pricing({ ...rest }: PricingProps) {
               >
                 {tier.priceMonthly}
               </span>
-              <span className={classNames(tier.featured ? 'text-gray-400' : 'text-gray-500', 'text-base')}>/month</span>
+              {/* <span className={classNames(tier.featured ? 'text-gray-400' : 'text-gray-500', 'text-base')}></span> */}
             </p>
             <p className={classNames(tier.featured ? 'text-gray-300' : 'text-gray-600', 'mt-6 text-base leading-7')}>
               {tier.description}
@@ -121,7 +120,7 @@ export default function Pricing({ ...rest }: PricingProps) {
                 'mt-8 block rounded-md py-2.5 px-3.5 text-center text-sm font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 sm:mt-10'
               )}
             >
-              Get started today
+              Adquirir
             </a>
           </div>
         ))}
