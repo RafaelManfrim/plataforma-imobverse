@@ -1,4 +1,3 @@
-import { ChevronRight } from "lucide-react"
 import { ScrollButton } from "./template/ScrollButton"
 
 export default function Hero() {

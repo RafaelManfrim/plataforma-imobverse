@@ -1,4 +1,12 @@
-const footerNavigation = {
+interface FooterNavigation {
+  social: {
+    name: string
+    href: string
+    icon: (props: React.ComponentProps<'svg'>) => JSX.Element
+  }[]
+}
+
+const footerNavigation: FooterNavigation = {
   social: [
     {
       name: 'Facebook',
