@@ -1,5 +1,6 @@
 import { CheckIcon } from "lucide-react"
 import { HTMLAttributes } from "react"
+import { useNavigate } from "react-router-dom"
 
 const tiers = [
   {
@@ -36,6 +37,8 @@ function classNames(...classes: string[]) {
 interface PricingProps extends HTMLAttributes<HTMLDivElement> {}
 
 export default function Pricing({ ...rest }: PricingProps) {
+  const navigate = useNavigate()
+
   return (
     <div {...rest} className="relative isolate bg-white px-6 py-24 sm:py-32 lg:px-8">
       <div className="absolute inset-x-0 -top-3 -z-10 transform-gpu overflow-hidden px-36 blur-3xl" aria-hidden="true">
@@ -119,6 +122,9 @@ export default function Pricing({ ...rest }: PricingProps) {
                   : 'text-indigo-600 ring-1 ring-inset ring-indigo-200 hover:ring-indigo-300 focus-visible:outline-indigo-600',
                 'mt-8 block rounded-md py-2.5 px-3.5 text-center text-sm font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 sm:mt-10'
               )}
+              onClick={() => {
+                navigate('/compra')
+              }}
             >
               Adquirir
             </a>
