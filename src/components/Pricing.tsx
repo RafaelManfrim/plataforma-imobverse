@@ -4,27 +4,31 @@ import { useNavigate } from "react-router-dom"
 
 const tiers = [
   {
-    name: 'Normal',
-    id: 'tier-normal',
-    href: '#',
+    name: 'Silver',
+    id: 'tier-silver',
     priceMonthly: 'R$ 19,99',
-    description: "Acesso ao evento com muita coisa boa",
-    features: ['W', 'X', 'Y', 'Z'],
+    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed neque elit, tristique non suscipit nec, ultricies a nunc.",
+    features: [
+      'Crachá Personalizado', 
+      'Brinde Padrão', 
+      'Acesso as Cadeiras', 
+      'Acesso as palestras e painéis'
+    ],
     featured: false,
   },
   {
-    name: 'Vip',
-    id: 'tier-vip',
-    href: '#',
+    name: 'Gold',
+    id: 'tier-gold',
     priceMonthly: 'R$ 49,99',
-    description: 'Acesso total ao evento com benefícios exclusivos',
+    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed neque elit, tristique non suscipit nec, ultricies a nunc.',
     features: [
-      'U',
-      'V',
-      'W',
-      'X',
-      'Y',
-      'Z',
+      'Crachá Personalizado',
+      'Brinde Exclusivo Caderno e Caneta',
+      'Acesso às palestras e painéis',
+      'Acesso Privilegiado com Mesa',
+      'Grupo exclusivo para networking',
+      'Espaço lounge com palestrantes',
+      'Jantar de networking incluso'
     ],
     featured: true,
   },
@@ -53,11 +57,11 @@ export default function Pricing({ ...rest }: PricingProps) {
       <div className="mx-auto max-w-2xl text-center lg:max-w-4xl">
         <h2 className="text-base font-semibold leading-7 text-indigo-600">Ingressos</h2>
         <p className="mt-2 text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
-          Título ou Frase de Impacto
+          Escolha o seu modelo de acesso
         </p>
       </div>
       <p className="mx-auto mt-6 max-w-2xl text-center text-lg leading-8 text-gray-600">
-        Subtítulo ou descrição, pode ser usado frase ou até removido
+        Garanta o seu acesso para imersão presencial e ter a oportunidade de se conectar com os melhores profissionais da Incorporação do Brasil!
       </p>
       <div className="mx-auto mt-16 grid max-w-lg grid-cols-1 items-center gap-y-6 sm:mt-20 sm:gap-y-0 lg:max-w-4xl lg:grid-cols-2">
         {tiers.map((tier, tierIdx) => (
@@ -114,7 +118,6 @@ export default function Pricing({ ...rest }: PricingProps) {
               ))}
             </ul>
             <a
-              href={tier.href}
               aria-describedby={tier.id}
               className={classNames(
                 tier.featured

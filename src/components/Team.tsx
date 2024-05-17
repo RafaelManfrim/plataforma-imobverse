@@ -34,10 +34,10 @@ export default function Team() {
     <div className="bg-white py-24 sm:py-32">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="mx-auto max-w-2xl sm:text-center">
-          <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Conheça os Palestrantes</h2>
+          <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Confira quem estará com a gente na próxima imersão</h2>
           <p className="mt-6 text-lg leading-8 text-gray-600">
-            We’re a dynamic group of individuals who are passionate about what we do and dedicated to delivering the
-            best results for our clients.
+            Teremos com a gente grandes empresários do cenário nacional compartilhando seu conhecimento e experiências práticas para potencializar o seus negócios. São mais de 20 horas de conteúdos simultâneos, entre às 8h e 20h teremos conteúdo no painel principal e também na sala de mentoria.
+            Alguns temas que serão abordados Planejamento Estratégico Viabilidade e Prospecção Estudo de massa Pesquisa de mercado Marketing do produto Vendas e time comercial Automação e inteligência empregada Viabilidade técnica, financeira e orçamentária Indicadores de rentabilidade da incorporação Obra e seus desafios Gestão de pessoas Cx e CS (relacionamento cliente) Funding e engenharia financeira Imóveis econômicos e de alto padrão e suas segmentações.
           </p>
         </div>
         <ul

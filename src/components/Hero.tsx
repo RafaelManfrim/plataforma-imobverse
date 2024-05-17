@@ -1,5 +1,7 @@
 import { ScrollButton } from "./template/ScrollButton"
 
+import CapaImg from "@/assets/capa.jpg"
+
 export default function Hero() {
   return (
     <div className="relative isolate overflow-hidden bg-white">
@@ -40,11 +42,11 @@ export default function Hero() {
             </a>
           </div> */}
           <h1 className="mt-10 text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
-            O maior evento de todos 
+            Hub e conteúdo e inteligência de mercado imobiliário
           </h1>
           <p className="mt-6 text-lg leading-8 text-gray-600">
-            Anim aute id magna aliqua ad ad non deserunt sunt. Qui irure qui lorem cupidatat commodo. Elit sunt amet
-            fugiat veniam occaecat fugiat aliqua.
+            ImobVerse tem como meta transformar vidas no mercado imobiliário. 
+            Ações de imersão, mentoria e podcast buscam qualificar profissionais e empresas da área. Transformar vidas no mercado imobiliário é a meta do Imobverse, uma plataforma que reúne ações de imersão, mentoria e podcast para qualificar profissionais e empresas. Em apenas seis meses, a rede saltou do mundo digital para criar conexões presenciais, com dois eventos presenciais com conteúdo e palestras disponibilizados para mais de 250 pessoas que passaram pelos eventos, que contou com especialistas de renome no mercado corporativo. O Imobverse também é um espaço para networking e geração de negócios com grandes plyers do mercado imobiliário.
           </p>
           <div className="mt-10 flex items-center gap-x-6">
           <ScrollButton toElementName="pricing">Garantir meu ingresso</ScrollButton>
@@ -63,8 +65,8 @@ export default function Hero() {
           <div className="max-w-3xl flex-none sm:max-w-5xl lg:max-w-none">
             <div className="-m-2 rounded-xl bg-gray-900/5 p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4">
               <img
-                src="https://tailwindui.com/img/component-images/project-app-screenshot.png"
-                alt="App screenshot"
+                src={CapaImg}
+                alt="Capa evento com o trio Imobverse"
                 width={2432}
                 height={1442}
                 className="w-[76rem] rounded-md shadow-2xl ring-1 ring-gray-900/10"
