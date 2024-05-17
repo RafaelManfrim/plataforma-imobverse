@@ -18,6 +18,19 @@ module.exports = {
     },
     extend: {
       colors: {
+        mainColor: {
+          DEFAULT: "#001647",
+          50: "#6e8cb6",
+          100: "#5c7aa9",
+          200: "#4a689c",
+          300: "#385590",
+          400: "#264383",
+          500: "#142177",
+          600: "#001647",
+          700: "#00133c",
+          800: "#001031",
+          900: "#000f26",
+        },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -93,5 +106,5 @@ module.exports = {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [],
 }

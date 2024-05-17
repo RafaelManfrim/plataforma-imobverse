@@ -1,4 +1,9 @@
-// import { useForm } from "react-hook-form"
+import clsx from "clsx";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form"
+import { useParams } from "react-router-dom";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as zod from "zod"
 
 import {
   Accordion,
@@ -6,31 +11,168 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"
-import { ContinueWithGoogleButton } from "./template/ContinueWithGoogleButton"
+import { Input } from "@/components/ui/input"
 
-const products = [
-  {
-    id: 1,
-    name: "Ingresso VIP",
-    type: "VIP",
-    price: 'R$ 99,99',
-    // href: '#',
-    // color: 'Gray',
-    // size: 'S',
-    // imageSrc: 'https://tailwindui.com/img/ecommerce-images/checkout-page-05-product-01.jpg',
-    // imageAlt: "Front of women's basic tee in heather gray.",
-  },
-]
+
+import { TicketId, tickets } from "@/util/tickets";
+import LogoImobverseConnection from "@/assets/imobverse/imagotipo-imobverse-connection-sem-fundo.png"
+
+import { MercadoPagoPaymentBrick } from "./MercadoPagoPaymentBrick"
+// import { ContinueWithGoogleButton } from "./template/ContinueWithGoogleButton"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "./ui/form";
+
+import { formatCel, formatCpf } from "@/util/formatCpf";
+import { Checkbox } from "./ui/checkbox";
+
+const participantSchema = zod.object({
+  cpf: zod.string({ required_error: 'CPF é obrigatório.' }).refine((doc) => {
+      const replacedDoc = doc.replace(/\D/g, '');
+      return replacedDoc.length == 11;
+    }, 'CPF deve conter 11 caracteres.')
+    .refine((doc) => {
+      const replacedDoc = doc.replace(/\D/g, '');
+      return !!Number(replacedDoc);
+    }, 'CPF deve conter apenas números.'),
+  phone: zod.string({ required_error: 'Celular é obrigatório.' }).refine((doc) => {
+    const replacedDoc = doc.replace(/\D/g, '');
+    return replacedDoc.length == 11;
+  }, 'Celular deve conter 11 caracteres.')
+  .refine((doc) => {
+    const replacedDoc = doc.replace(/\D/g, '');
+    return !!Number(replacedDoc);
+  }, 'Celular deve conter apenas números.'),
+  email: zod.string({ required_error: 'E-mail é obrigatório.' }).email({
+    message: 'E-mail inválido.'
+  }),
+  name: zod.string({ required_error: 'Nome é obrigatório.' }).refine((doc) => {
+    return doc.length >= 3;
+  }, 'O nome precisa ter pelo menos 3 caracteres.'),
+})
+
+const buyerSchema = zod.object({
+  cpf: zod.string({ required_error: 'CPF é obrigatório.' }).refine((doc) => {
+    const replacedDoc = doc.replace(/\D/g, '');
+    return replacedDoc.length == 11;
+  }, 'CPF deve conter 11 caracteres.')
+  .refine((doc) => {
+    const replacedDoc = doc.replace(/\D/g, '');
+    return !!Number(replacedDoc);
+  }, 'CPF deve conter apenas números.'),
+  phone: zod.string({ required_error: 'Celular é obrigatório.' }).refine((doc) => {
+    const replacedDoc = doc.replace(/\D/g, '');
+    return replacedDoc.length == 11;
+  }, 'Celular deve conter 11 caracteres.')
+  .refine((doc) => {
+    const replacedDoc = doc.replace(/\D/g, '');
+    return !!Number(replacedDoc);
+  }, 'Celular deve conter apenas números.'),
+  email: zod.string({ required_error: 'E-mail é obrigatório.' }).email({
+    message: 'E-mail inválido.'
+  }),
+  name: zod.string({ required_error: 'Nome é obrigatório.' }).refine((doc) => {
+    return doc.length >= 3;
+  }, 'O nome precisa ter pelo menos 3 caracteres.'),
+})
+
+type ParticipantSchema = zod.infer<typeof participantSchema>
+type BuyerSchema = zod.infer<typeof buyerSchema>
+
+type SubmitData = {
+  participant: ParticipantSchema | undefined
+  buyer: BuyerSchema | undefined
+}
 
 export default function Checkout() {
-  // const formCadastro = useForm({})
+  const [availabeSteps, setAvailableSteps] = useState({
+    participant: true,
+    buyer: false,
+    payment: false,
+  })
 
-  // const formPagamento = useForm({})
+  const [activeStep, setActiveStep] = useState("item-1")
+
+  const [isParticipantBuyer, setIsParticipantBuyer] = useState(false)
+
+  const [submitData, setSubmitData] = useState<SubmitData>({
+    participant: undefined,
+    buyer: undefined,
+  })
+
+  const params = useParams()
+  const ticketId: TicketId | string | undefined = params.id
+
+  const participantForm = useForm<ParticipantSchema>({
+    resolver: zodResolver(participantSchema),
+    defaultValues: {
+      cpf: "",
+      email: "",
+      phone: "",
+      name: "",
+    }
+  })
+
+  const buyerForm = useForm<BuyerSchema>({
+    resolver: zodResolver(buyerSchema),
+  })
+
+  function handleParticipantSubmit(data: ParticipantSchema) {
+    setSubmitData(oldSubmitData => ({
+      ...oldSubmitData,
+      participant: data,
+    }))
+
+    setAvailableSteps({
+      ...availabeSteps,
+      buyer: true,
+    })
+
+    setActiveStep("item-2")
+  }
+
+  function handleBuyerSubmit(data: BuyerSchema) {
+    setSubmitData(oldSubmitData => ({
+      ...oldSubmitData,
+      buyer: data,
+    }))
+
+    setAvailableSteps({
+      ...availabeSteps,
+      payment: true,
+    })
+
+    setActiveStep("item-3")
+  }
+
+  useEffect(() => {
+    if(isParticipantBuyer) {
+      buyerForm.reset({
+        name: participantForm.getValues('name'),
+        cpf: participantForm.getValues('cpf'),
+        email: participantForm.getValues('email'),
+        phone: participantForm.getValues('phone'),
+      })
+    } else {
+      buyerForm.reset({
+        name: "",
+        cpf: "",
+        email: "",
+        phone: "",
+      })
+    }
+  }, [isParticipantBuyer])
+
+  if (!ticketId) {
+    return <div>404</div>
+  }
+
+  const product = tickets[ticketId]
 
   return (
     <div className="bg-white">
-      <div className="bg-blue-300">
-        Header
+      <div className="bg-mainColor-600 p-8">
+        <a href="/">
+          <img src={LogoImobverseConnection} alt="" className="max-w-48" />
+        </a>
       </div>
       <div className="mx-auto max-w-7xl px-4 pb-16 pt-4 sm:px-6 sm:pb-24 sm:pt-8 lg:px-8 xl:px-2 xl:pt-14">
         <h1 className="sr-only">Compra de ingresso</h1>
@@ -41,44 +183,24 @@ export default function Checkout() {
 
             <div className="flow-root">
               <ul role="list" className="-my-6 divide-y divide-gray-200">
-                {products.map((product) => (
-                  <li key={product.id} className="flex space-x-6 py-6">
-                    {/* <div
-                      className="h-24 w-24 flex-none rounded-md bg-blue-500 object-cover object-center"
-                    >
-                      {product.type}
-                    </div> */}
-                    <div
-                      className="h-24 w-24 flex flex-col gap-1 rounded-md bg-blue-500 items-center justify-center text-white font-bold text-lg"
-                    >
-                      <span className="text-2xl">Logo</span>
-                      {product.type}
-                    </div>
-                    <div className="flex-auto">
-                      <div className="space-y-1 sm:flex sm:items-start sm:justify-between sm:space-x-6">
-                        <div className="flex-auto space-y-1 text-sm font-medium">
-                          <h3 className="text-gray-900">
-                            {product.name}
-                            {/* <a href={product.href}>{product.name}</a> */}
-                          </h3>
-                          <p className="text-gray-900">{product.price}</p>
-                          {/* <p className="hidden text-gray-500 sm:block">{product.color}</p>
-                          <p className="hidden text-gray-500 sm:block">{product.size}</p> */}
-                        </div>
-                        {/* <div className="flex flex-none space-x-4">
-                          <button type="button" className="text-sm font-medium text-indigo-600 hover:text-indigo-500">
-                            Edit
-                          </button>
-                          <div className="flex border-l border-gray-300 pl-4">
-                            <button type="button" className="text-sm font-medium text-indigo-600 hover:text-indigo-500">
-                              Remove
-                            </button>
-                          </div>
-                        </div> */}
+                <li className="flex space-x-6 py-6">
+                  <div
+                    className={clsx("h-24 w-24 flex flex-col gap-1 rounded-md bg-mainColor-600 items-center justify-center font-bold text-lg", product.type === "silver" ? "text-slate-400" : "text-amber-500")}
+                  >
+                    <img src={LogoImobverseConnection} alt="" className="px-4" />
+                    {product.type}
+                  </div>
+                  <div className="flex-auto">
+                    <div className="space-y-1 sm:flex sm:items-start sm:justify-between sm:space-x-6">
+                      <div className="flex-auto space-y-1 text-sm font-medium">
+                        <h3 className="text-gray-900">
+                          {product.name}
+                        </h3>
+                        <p className="text-gray-900">{product.price}</p>
                       </div>
                     </div>
-                  </li>
-                ))}
+                  </div>
+                </li>
               </ul>
             </div>
 
@@ -86,106 +208,288 @@ export default function Checkout() {
               {/* <div className="flex justify-between">
                 <dt>Subtotal</dt>
                 <dd className="text-gray-900">$104.00</dd>
-              </div>
-              <div className="flex justify-between">
-                <dt>Taxes</dt>
-                <dd className="text-gray-900">$8.32</dd>
-              </div>
-              <div className="flex justify-between">
-                <dt>Shipping</dt>
-                <dd className="text-gray-900">$14.00</dd>
               </div> */}
               <div className="flex justify-between border-t border-gray-200 pt-6 text-gray-900">
                 <dt className="text-base">Total</dt>
-                <dd className="text-base">R$ 99,99</dd>
+                <dd className="text-base">{product.price}</dd>
               </div>
             </dl>
           </div>
 
           <div className="mx-auto w-full max-w-lg">
-            
-
-            <Accordion type="single" collapsible className="w-full">
-              <AccordionItem value="item-1">
-                <AccordionTrigger>Cadastro</AccordionTrigger>
+            <Accordion type="single" className="w-full" value={activeStep} onValueChange={setActiveStep}>
+              <AccordionItem value="item-1" disabled={!availabeSteps.participant}>
+                <AccordionTrigger className={
+                  clsx(
+                    "px-4",
+                    activeStep === "item-1" ? "bg-gray-100" : "bg-white",
+                    !availabeSteps.participant && "cursor-not-allowed hover:no-underline text-slate-500"
+                  )
+                } onClick={() => {
+                  setActiveStep("item-1")
+                  setAvailableSteps({
+                    ...availabeSteps,
+                    buyer: false,
+                    payment: false,
+                  })
+                }}>Detalhes do Participante</AccordionTrigger>
                 <AccordionContent>
-                  <form>
-                    {/* NOME COMPLETO
-                    CPF
-                    TELEFONE */}
+                  <Form {...participantForm}>
+                    <div className="mx-4 mt-4">
+                      <FormField
+                        control={participantForm.control}
+                        name="name"
+                        render={({ field }) => (
+                          <FormItem className="mb-4">
+                            <FormLabel>Nome Completo</FormLabel>
+                            <FormControl>
+                              <Input type="text" placeholder="Nome Completo" {...field} />
+                            </FormControl>
+                            <FormMessage>
+                              {participantForm.formState.errors.name?.message}
+                            </FormMessage>
+                          </FormItem>
+                        )}
+                      />
 
-                    <div className="mt-6">
-                      <label htmlFor="email-address" className="block text-sm font-medium text-gray-700">
-                        E-mail
-                      </label>
-                      <div className="mt-1">
-                        <input
-                          type="email"
-                          id="email-address"
-                          name="email-address"
-                          autoComplete="email"
-                          className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                        />
-                      </div>
-                    </div>
+                      <FormField
+                        control={participantForm.control}
+                        name="cpf"
+                        render={({ field: { onChange, ...props } }) => (
+                          <FormItem className="mb-4">
+                            <FormLabel>CPF</FormLabel>
+                            <FormControl>
+                              <Input 
+                                type="text" 
+                                placeholder="CPF" 
+                                onChange={(e) => {
+                                  const { value } = e.target;
+                                  e.target.value = formatCpf(value);
+                                  onChange(e);
+                                }} 
+                                {...props} 
+                              />
+                            </FormControl>
+                            <FormMessage>
+                              {participantForm.formState.errors.cpf?.message}
+                            </FormMessage>
+                          </FormItem>
+                        )}
+                      />
 
-                    <div className="mt-6">
-                      <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                        Senha
-                      </label>
-                      <div className="mt-1">
-                        <input
-                          type="password"
-                          id="password"
-                          name="password"
-                          className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                        />
-                      </div>
-                    </div>
+                      <FormField
+                        control={participantForm.control}
+                        name="email"
+                        render={({ field }) => (
+                          <FormItem className="mb-4">
+                            <FormLabel>E-mail</FormLabel>
+                            <FormControl>
+                              <Input type="email" placeholder="E-mail" {...field} />
+                            </FormControl>
+                            <FormMessage>
+                              {participantForm.formState.errors.email?.message}
+                            </FormMessage>
+                          </FormItem>
+                        )}
+                      />
 
-                    <div className="mt-6 flex space-x-2">
-                      <div className="flex h-5 items-center">
-                        <input
-                          id="terms"
-                          name="terms"
-                          type="checkbox"
-                          className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                        />
-                      </div>
-                      <label htmlFor="terms" className="text-sm text-gray-500">
-                        Eu concordo com os{' '}
-                        <a href="#" className="font-medium text-gray-900 underline">
-                          Termos de Serviço
-                        </a>
-                      </label>
+                      <FormField
+                        control={participantForm.control}
+                        name="phone"
+                        render={({ field: { onChange, ...props } }) => (
+                          <FormItem>
+                            <FormLabel>Celular</FormLabel>
+                            <FormControl>
+                              <Input 
+                                type="tel" 
+                                placeholder="Celular" 
+                                onChange={(e) => {
+                                  const { value } = e.target;
+                                  e.target.value = formatCel(value);
+                                  onChange(e);
+                                }} 
+                                {...props} 
+                              />
+                            </FormControl>
+                            <FormMessage>
+                              {participantForm.formState.errors.phone?.message}
+                            </FormMessage>
+                          </FormItem>
+                        )}
+                      />
                     </div>
 
                     <button
-                      type="submit"
-                      disabled
-                      className="mt-6 w-full rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-500"
+                      className="mt-6 w-full rounded-md border border-transparent bg-mainColor-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-mainColor-700 focus:outline-none focus:ring-2 focus:ring-mainColor-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-500"
+                      onClick={participantForm.handleSubmit(handleParticipantSubmit)}
                     >
                       Continuar
                     </button>
+                  </Form>
 
-                    <div className="relative mt-8 mb-4">
-                      <div className="absolute inset-0 flex items-center" aria-hidden="true">
-                        <div className="w-full border-t border-gray-200" />
-                      </div>
-                      <div className="relative flex justify-center">
-                        <span className="bg-white px-4 text-sm font-medium text-gray-500">ou</span>
-                      </div>
+                  {/* <div className="relative my-6">
+                    <div className="absolute inset-0 flex items-center" aria-hidden="true">
+                      <div className="w-full border-t border-gray-200" />
                     </div>
+                    <div className="relative flex justify-center">
+                      <span className="bg-white px-4 text-sm font-medium text-gray-500">ou</span>
+                    </div>
+                  </div>
 
-                    <ContinueWithGoogleButton />
-                  </form>
+                  <ContinueWithGoogleButton /> */}
                 </AccordionContent>
               </AccordionItem>
-              <AccordionItem value="item-2">
-                <AccordionTrigger>Detalhes do Pagamento</AccordionTrigger>
+              <AccordionItem value="item-2" disabled={!availabeSteps.buyer}>
+                <AccordionTrigger className={
+                  clsx(
+                    "px-4",
+                    activeStep === "item-2" ? "bg-gray-100" : "bg-white",
+                    !availabeSteps.buyer && "cursor-not-allowed hover:no-underline text-slate-500"
+                  )
+                }onClick={
+                  () => {
+                    setActiveStep("item-2")
+                    setAvailableSteps({
+                      ...availabeSteps,
+                      payment: false,
+                    })
+                  }
+                }>
+                  Detalhes do Comprador
+                </AccordionTrigger>
                 <AccordionContent>
-                  Yes. It comes with default styles that matches the other
-                  components&apos; aesthetic.
+                <Form {...buyerForm}>
+                    <div className="mx-4 mt-4">
+                      <FormItem className="mb-4 flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                        <FormControl>
+                          <Checkbox
+                            checked={isParticipantBuyer}
+                            onCheckedChange={
+                              (checked) => {
+                                if (checked !== "indeterminate") {
+                                  setIsParticipantBuyer(checked)
+                                }
+                              }
+                            }
+                          />
+                        </FormControl>
+                        <div className="space-y-1 leading-none">
+                          <FormLabel>
+                            O comprador é o mesmo que o participante?
+                          </FormLabel>
+                        </div>
+                      </FormItem>
+
+                      <FormField
+                        control={buyerForm.control}
+                        name="name"
+                        render={({ field }) => (
+                          <FormItem className="mb-4">
+                            <FormLabel>Nome Completo</FormLabel>
+                            <FormControl>
+                              <Input disabled={isParticipantBuyer} type="text" placeholder="Nome Completo" {...field} />
+                            </FormControl>
+                            <FormMessage>
+                              {buyerForm.formState.errors.name?.message}
+                            </FormMessage>
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={buyerForm.control}
+                        name="cpf"
+                        render={({ field: { onChange, ...props } }) => (
+                          <FormItem className="mb-4">
+                            <FormLabel>CPF</FormLabel>
+                            <FormControl>
+                              <Input 
+                                disabled={isParticipantBuyer}
+                                type="text" 
+                                placeholder="CPF" 
+                                onChange={(e) => {
+                                  const { value } = e.target;
+                                  e.target.value = formatCpf(value);
+                                  onChange(e);
+                                }} 
+                                {...props} 
+                              />
+                            </FormControl>
+                            <FormMessage>
+                              {buyerForm.formState.errors.cpf?.message}
+                            </FormMessage>
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={buyerForm.control}
+                        name="email"
+                        render={({ field }) => (
+                          <FormItem className="mb-4">
+                            <FormLabel>E-mail</FormLabel>
+                            <FormControl>
+                              <Input disabled={isParticipantBuyer} type="email" placeholder="E-mail" {...field} />
+                            </FormControl>
+                            <FormMessage>
+                              {buyerForm.formState.errors.email?.message}
+                            </FormMessage>
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={buyerForm.control}
+                        name="phone"
+                        render={({ field: { onChange, ...props } }) => (
+                          <FormItem>
+                            <FormLabel>Celular</FormLabel>
+                            <FormControl>
+                              <Input 
+                                disabled={isParticipantBuyer}
+                                type="tel" 
+                                placeholder="Celular" 
+                                onChange={(e) => {
+                                  const { value } = e.target;
+                                  e.target.value = formatCel(value);
+                                  onChange(e);
+                                }} 
+                                {...props} 
+                              />
+                            </FormControl>
+                            <FormMessage>
+                              {buyerForm.formState.errors.phone?.message}
+                            </FormMessage>
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
+                    <button
+                      className="mt-6 w-full rounded-md border border-transparent bg-mainColor-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-mainColor-700 focus:outline-none focus:ring-2 focus:ring-mainColor-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-500"
+                      onClick={buyerForm.handleSubmit(handleBuyerSubmit)}
+                    >
+                      Continuar
+                    </button>
+                  </Form>
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="item-3" disabled={!availabeSteps.payment}>
+                <AccordionTrigger className={
+                  clsx(
+                    "px-4",
+                    activeStep === "item-3" ? "bg-gray-100" : "bg-white",
+                    !availabeSteps.payment && "cursor-not-allowed hover:no-underline text-slate-500"
+                  )
+                }onClick={
+                  () => {
+                    setActiveStep("item-3")
+                  }
+                }>Detalhes do Pagamento</AccordionTrigger>
+                <AccordionContent>
+                  <div className="mx-4 mt-4">
+                    <MercadoPagoPaymentBrick />
+                  </div>
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
