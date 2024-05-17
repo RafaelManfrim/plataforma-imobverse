@@ -1,4 +1,4 @@
-import { useForm } from "react-hook-form"
+// import { useForm } from "react-hook-form"
 
 import {
   Accordion,
@@ -23,9 +23,9 @@ const products = [
 ]
 
 export default function Checkout() {
-  const formCadastro = useForm({})
+  // const formCadastro = useForm({})
 
-  const formPagamento = useForm({})
+  // const formPagamento = useForm({})
 
   return (
     <div className="bg-white">
