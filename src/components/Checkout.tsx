@@ -161,6 +161,12 @@ export default function Checkout() {
     }
   }, [isParticipantBuyer])
 
+  useEffect(() => {
+    if (submitData) {
+      console.log({submitData})
+    }
+  } , [submitData])
+
   if (!ticketId) {
     return <div>404</div>
   }
